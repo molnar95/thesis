@@ -38,10 +38,19 @@ link_ext <- function(elem){
 
 # article extractor:
 text_ext <- function(elem){
-  text <- xml_text(b %>% html_nodes("p"))
+  text <- xml_text(elem %>% html_nodes("p"))
   text <- paste(text, collapse = ' ')
   
   return(text)
+}
+
+
+# advertisement count:
+adv_ext <- function(elem){
+  text <- as.character(elem)
+  count <- str_count(a, "window.adsbygoogle")
+
+  return(count)
 }
 
 
@@ -90,6 +99,8 @@ df_append <- function(folder){
   df <- as.data.frame(df)
   
   write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/Világfigyelő/vilagfigyelo_articles.csv', sep = '%%', fileEncoding = "utf-8")
+  
+  saveRDS(df, 'C:/Users/molna/Desktop/Szakdolgozat/Világfigyelő/vilagfigyelo_articles.rds')
   
   return(df)
 }
