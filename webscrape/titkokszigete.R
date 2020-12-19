@@ -12,11 +12,19 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/TitkokSzigete/htmls")
 # Read pages and collect article URLs   #
 #########################################
 
+key1 <- "koronavírus" #51
+key2 <- "covid"       #17
+key3 <- "karantén"    #8
+key4 <- "vuhan"       #3
+key5 <- "vírus"       #59
+key6 <- "járvány"     #51
+key7 <- "vakcina"     #12
+
 
 links <- c()
-pb <- txtProgressBar(min=0, max=32, style=3)
-for (i in 1:32){
-  link <- paste0("http://titkokszigete.hu/page/", i, "/?s=koronav%C3%ADrus")
+pb <- txtProgressBar(min=0, max=12, style=3)
+for (i in 1:12){
+  link <- paste0("http://titkokszigete.hu/page/", i, "/?s=", key7)
   pages <- read_html(link)
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
   
@@ -28,12 +36,16 @@ for (i in 1:32){
   
   setTxtProgressBar(pb, i)
 }
+
+links <- unique(links)
+
 links
+
 
 
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i],file= paste(i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key7, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -57,8 +69,7 @@ text_ext <- function(elem){
   text <- xml_text(elem %>% html_nodes(xpath="//div[@class='main-site-wrap']//p"))
   text <- paste(text, collapse = '')
   text <- gsub("2019 Titkokszigete.hu - Minden jog fenntartva!", "", text)
-  #text <- gsub("2020 Titkokszigete.hu - Minden jog fenntartva!", "", text)
-  
+
   return(text)
 }  
 
@@ -125,6 +136,8 @@ df_append <- function(folder){
     data.table::rbindlist() 
   
   df <- as.data.frame(df)
+  
+  saveRDS(df, 'C:/Users/molna/Desktop/Szakdolgozat/TitkokSzigete/titkokszigete_articles.rds')
   
   write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/TitkokSzigete/titkokszigete_articles.csv', sep = '%%', fileEncoding = "utf-8")
   
