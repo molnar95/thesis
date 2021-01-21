@@ -3,7 +3,6 @@ library(rvest)
 library(tidyverse)
 library(dplyr)
 
-url <- "https://www.minden-egyben.com/?kw=koronav%C3%ADrus&oldal="
 setwd("C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/htmls")
 
 
@@ -11,18 +10,37 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/htmls")
 # Read pages and collect article URLs   #
 #########################################
 
+
+# set keywords and search urls
+key1 <- "koronavírus" #153
+key2 <- "covid"       #43
+key3 <- "karantén"
+key4 <- "vuhan"
+key5 <- "vírus"
+key6 <- "járvány"
+key7 <- "vakcina"
+
+
+# iterating on search urls and save 
+# article links
+# TODO: set link number!!
 links <- c()
-for (i in 1:110){
-  pages <- read_html(paste0(url, i))
+for (i in 1:43){
+  link <- paste0("https://www.minden-egyben.com/?kw=", key2, "&oldal=", i)
+  pages <- read_html(link)
   urls <- as.vector(pages %>% html_nodes("a.postbox_details")) %>% html_attr("href")
   
   links <- c(links, urls)
 }
 links
 
+links <- unique(links)
 
+
+# download links HTML-s
+# TODO: set key number!
 for (i in 1:length(links)){
-  download_html(links[i],file= paste(i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file=paste(key, "_", i, ".html", sep = ""), mode="wb")
 }
 
 
@@ -42,7 +60,7 @@ title_ext(b)
 # Article extractor:
 text_ext <- function(elem){
   text <- xml_text(elem %>% html_nodes(xpath="//div[@class='post_content_holder']//p"))
-  text <- paste(textbox, collapse = '')
+  text <- paste(text, collapse = '')
   
   return(text)
 }
@@ -81,7 +99,6 @@ df_creator <- function(elem){
   
   return(df)
 }
-df_creator(b)
 
 
 #######################
@@ -115,7 +132,9 @@ df_append <- function(folder){
   
   df <- as.data.frame(df)
   
-  write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.csv', sep = '%%', fileEncoding = "utf-8")
+  saveRDS(df, "C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.rds")
+  
+  # write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.csv', sep = '%%', fileEncoding = "utf-8")
   
   return(df)
 }
