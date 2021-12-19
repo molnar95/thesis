@@ -5,7 +5,7 @@ library(dplyr)
 
 library(svMisc)
 
-setwd("C:/Users/molna/Desktop/Szakdolgozat/Eztnézdmeg/htmls")
+setwd("C:/Users/molna/Desktop/Szakdolgozat/Eztnézdmeg/htmls1")
 
 
 #########################################
@@ -14,28 +14,29 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/Eztnézdmeg/htmls")
 
 
 # set keywords and search urls
-key1 <- "koronavírus"
-key2 <- "covid"
-key3 <- "karantén"
-key4 <- "vuhan"
-key5 <- "vírus"
-key6 <- "járvány"
+key1 <- "koronavírus" # 142
+key2 <- "covid"       # 41
+key3 <- "karantén"    # 29
+key4 <- "vuhan"       # 4
+key5 <- "vírus"       # 150
+key6 <- "járvány"     # 113
+key7 <- "vakcina"     # 67
 
+key <- key7
+iter <- 67
 
 # iterating on search urls and save 
 # article links
 # TODO: set link number!!
 links <- c()
-pb <- txtProgressBar(min=0, max=57, style=3)
-for (i in 1:57){
-  link <- paste0("http://eztnezdmeg.com/page/", i, "/?s=", key6)
+pb <- txtProgressBar(min=0, max=10, style=3)
+for (i in 1:iter){
+  link <- paste0("http://eztnezdmeg.com/page/", i, "/?s=", key)
   pages <- read_html(link)
+  
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
-  
-  #words <- c("http://titkokszigete.hu/", "http://titkokszigete.hu")
   link <- link[!grepl("page|kapcsolat|kategoria|jogi-nyilatkozat|facebook|themeruby|#|javascript", link)]
-  #link <- link[sapply(link, function(x) any(!(x %in% words)))]
-  
+
   links <- append(link, links)
   
   setTxtProgressBar(pb, i)
@@ -48,7 +49,7 @@ links <- unique(links)
 # TODO: set key number!
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i],file= paste(key6, "_", i, ".html", sep = ""), mode="wb")
+  download_html(links[i],file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -66,7 +67,6 @@ title_ext <- function(elem){
   return(tit)
 }
 
-
 # date extractor:
 date_ext <- function(elem){
   date <- xml_text(elem %>% html_nodes(xpath="//meta[@itemprop='datePublished']/@content"))
@@ -74,15 +74,13 @@ date_ext <- function(elem){
   return(date)
 }
 
-
 # link extractor:
 link_ext <- function(elem){
-  link <- elem %>% html_nodes("link") %>% xml_attr('href')
-  link <- link[27]
+  link <- xml_text(elem %>% html_nodes(xpath="//meta[@property='og:url']/@content"))
+  link <- link[1]
   
   return(link)
 }
-
 
 # article extractor:
 text_ext <- function(elem){
@@ -91,7 +89,6 @@ text_ext <- function(elem){
   
   return(text)
 }  
-
 
 # create dataframe from HTML elements:
 df_creator <- function(elem){
@@ -117,7 +114,7 @@ html_to_df <- function(folder){
   
   i = 1
   while(i <= length(linkfile)){
-    datas <- df_creator(read_html(linkfile[i]))
+    datas <- df_creator(read_html(linkfile[i], encoding = "utf-8"))
     saveRDS(datas, 
             paste0('C:/Users/molna/Desktop/Szakdolgozat/Eztnézdmeg/data', 
                    '/', 'dataframe', '_', i, '.RData'))
@@ -147,8 +144,9 @@ df_append <- function(folder){
 # Function calls  #
 ###################
 
-html_to_df('htmls')
+html_to_df('htmls1')
 df_append('data')
+
 
 
 
