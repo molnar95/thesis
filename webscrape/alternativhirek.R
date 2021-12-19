@@ -5,7 +5,7 @@ library(dplyr)
 
 library(svMisc)
 
-setwd("C:/Users/molna/Desktop/Szakdolgozat/Alternatívhírek/htmls")
+setwd("C:/Users/molna/Desktop/Szakdolgozat/Alternatívhírek/htmls1")
 
 
 #########################################
@@ -21,10 +21,11 @@ key5 <- "vírus"       #55
 key6 <- "járvány"     #45
 key7 <- "vakcina"     #15  
 
+key <- key2
 
 links <- c()
-for (i in seq(0, 15, 5)) {
-  link <- paste0("https://www.alternativhirek.com/search?q=", key7, "&updated-max=2020-12-15T07:38:00-08:00&max-results=20&start=", i,
+for (i in seq(0, 1000, 5)) {
+  link <- paste0("https://www.alternativhirek.com/search?q=", key, "&updated-max=2021-06-08T14:29:00&max-results=20&start=", i,
                  "&by-date=true")
   pages <- read_html(link)
   
@@ -41,7 +42,7 @@ links
 # TODO: set key number!
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i], file= paste(key7, "_", i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -51,6 +52,9 @@ for (i in 1:length(links)){
 # Extract HTML elements #
 #########################
 
+#linkfile <- "covid_310.html"
+#elem <- read_html(linkfile,  encoding = "utf-8")
+
 # Title extractor:
 title_ext <- function(elem){
   tit <- xml_text(elem %>% html_nodes("title"))
@@ -59,7 +63,7 @@ title_ext <- function(elem){
   
   return(tit)
 }
-
+#title_ext(elem)
 
 # Article extractor:
 text_ext <- function(elem){
@@ -70,6 +74,8 @@ text_ext <- function(elem){
       text <- gsub("\\Szerkesztette:.*", "", text)
   } else if (grepl("Fordította és írta:", text, fixed = TRUE)) {
       text <- gsub("\\Fordította és írta:.*", "", text)
+  } else if (grepl("Fordította és szerkesztette:", text, fixed = TRUE)) {
+    text <- gsub("\\Fordította és szerkesztette:.*", "", text)
   } else if (grepl("Fordította:", text, fixed = TRUE)) {
       text <- gsub("\\Fordította:.*", "", text)
   } else if (grepl("Forrás:", text, fixed = TRUE)) {
@@ -80,7 +86,7 @@ text_ext <- function(elem){
     
   return(text)
 }
-
+#text_ext(elem)
 
 # Date extractor:
 date_ext <- function(elem){
@@ -89,7 +95,7 @@ date_ext <- function(elem){
 
   return(date)
 }
-
+#date_ext(elem)
 
 # Link extractor:
 link_ext <- function(elem){
@@ -97,6 +103,7 @@ link_ext <- function(elem){
   
   return(link)
 }
+#link_ext(elem)
 
 
 # Create df from HTML elements:
@@ -124,7 +131,7 @@ html_to_df <- function(folder){
   
   i = 1
   while(i <= length(linkfile)){
-    datas <- df_creator(read_html(linkfile[i],  encoding = "utf-8"))
+    datas <- df_creator(read_html(linkfile[i], encoding = "utf-8"))
     saveRDS(datas, 
             paste0('C:/Users/molna/Desktop/Szakdolgozat/Alternatívhírek/data', 
                    '/', 'dataframe', '_', i, '.RData'))
@@ -157,6 +164,9 @@ df_append <- function(folder){
 # Function calls  #
 ###################
 
-html_to_df('htmls')
+html_to_df('htmls1')
 df_append('data')
 
+df <- read.csv('C:/Users/molna/Desktop/Szakdolgozat/Alternatívhírek/alternativhirek_articles.csv', sep = '%%',
+               fileEncoding = "utf-8")
+read
