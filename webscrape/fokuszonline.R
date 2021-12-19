@@ -116,7 +116,9 @@ df_creator <- function(elem){
   return(df)
 }
 
+as.character(b)
 
+str_count(as.character(b), "window.adsbygoogle")
 
 #######################
 # Process HTML files  #
