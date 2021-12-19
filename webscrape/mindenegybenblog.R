@@ -12,21 +12,23 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/htmls")
 
 
 # set keywords and search urls
-key1 <- "koronavírus" #153
-key2 <- "covid"       #43
-key3 <- "karantén"
-key4 <- "vuhan"
-key5 <- "vírus"
-key6 <- "járvány"
-key7 <- "vakcina"
+key1 <- "koronavírus" # 153
+key2 <- "covid"       # 45
+key3 <- "karantén"    # 17 
+key4 <- "vuhan"       # 2
+key5 <- "vírus"       # 64
+key6 <- "járvány"     # 106
+key7 <- "vakcina"     # 33
 
+key <- key7
+iter <- 33
 
 # iterating on search urls and save 
 # article links
 # TODO: set link number!!
 links <- c()
-for (i in 1:43){
-  link <- paste0("https://www.minden-egyben.com/?kw=", key2, "&oldal=", i)
+for (i in 1:iter){
+  link <- paste0("https://www.minden-egyben.com/?kw=", key, "&oldal=", i)
   pages <- read_html(link)
   urls <- as.vector(pages %>% html_nodes("a.postbox_details")) %>% html_attr("href")
   
@@ -50,12 +52,11 @@ for (i in 1:length(links)){
 
 # Title extractor:
 title_ext <- function(elem){
-  tit <- xml_text(elem %>% html_nodes("div.title_row"))
-  tit <- gsub("\t\\s*|\n", "", title)
+  tit <- xml_text(elem %>% html_nodes("title"))
+  #tit <- gsub("\t\\s*|\n", "", title)
   
   return(tit)
 }
-title_ext(b)
 
 # Article extractor:
 text_ext <- function(elem){
@@ -64,7 +65,6 @@ text_ext <- function(elem){
   
   return(text)
 }
-text_ext(b)
 
 # Date extractor:
 date_ext <- function(elem){
@@ -76,8 +76,6 @@ date_ext <- function(elem){
   
   return(date)
 }
-date_ext(b)
-
 
 # Link extractor:
 link_ext <- function(elem){
@@ -85,8 +83,6 @@ link_ext <- function(elem){
   
   return(link)
 }
-link_ext(b)
-
 
 # Create df from HTML elements:
 df_creator <- function(elem){
@@ -112,7 +108,7 @@ html_to_df <- function(folder){
   
   i = 1
   while(i <= length(linkfile)){
-    datas <- df_creator(read_html(linkfile[i]))
+    datas <- df_creator(read_html(linkfile[i], encoding = "utf-8"))
     saveRDS(datas, 
             paste0('C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/data', 
                    '/', 'dataframe', '_', i, '.RData'))
@@ -134,7 +130,7 @@ df_append <- function(folder){
   
   saveRDS(df, "C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.rds")
   
-  # write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.csv', sep = '%%', fileEncoding = "utf-8")
+  write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/Mindenegyben.Blog/mindenegyben_articles.csv', sep = '%%', fileEncoding = "utf-8")
   
   return(df)
 }
@@ -146,33 +142,4 @@ df_append <- function(folder){
 
 html_to_df('htmls')
 df_append('data')
-
-
-
-
-
-
-
-
-
-######################
-# Elements  - TEST   #
-######################
-
-#xml_text(b %>% html_nodes("div.post_content_holder"))
-#(b %>% html_nodes(xpath="//div[@class='post_content_holder']//preceding-sibling::p"))
-#text <- xml_text(b %>% html_nodes(xpath="//div/preceding-sibling::p"))
-#xml_text(b %>% html_nodes(xpath="//div/preceding-sibling::p"))
-
-"""
-text <- function(elem){
-  textbox <- xml_text(elem %>% html_nodes(xpath='//div/following-sibling::p'))
-  textbox <- paste(textbox, collapse = '')
-  
-  return(textbox)
-}
-text(b)
-"""
-
-
 
