@@ -12,15 +12,29 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/KimondottIgazságok/htmls")
 # Read pages and collect article URLs   #
 #########################################
 
+# set keywords and search urls
+key1 <- "koronavírus" # 140
+key2 <- "covid"       # 55
+key3 <- "karantén"    # 18
+key4 <- "vuhan"       # 12
+key5 <- "vírus"       # 144
+key6 <- "járvány"     # 130
+key7 <- "vakcina"     # 61
 
+iter <- 61
+key <- key7
+
+# iterating on search urls and save 
+# article links
+# TODO: set link number!!
 links <- c()
-pb <- txtProgressBar(min=0, max=32, style=3)
-for (i in 1:32){
-  link <- paste0("http://kimondottigazsagok.com/page/", i, "/?s=koronav%C3%ADrus")
+pb <- txtProgressBar(min=0, max=80, style=3)
+for (i in 1:iter){
+  link <- paste0("http://kimondottigazsagok.com/page/", i, "/?s=", key)
   pages <- read_html(link)
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
   
-  words <- c("http://titkokszigete.hu/", "http://titkokszigete.hu")
+  words <- c("http://kimondottigazsagok.com/", "http://kimondottigazsagok.com/?s=koronav%C3%ADrus")
   link <- link[!grepl("page|kapcsolat|kategoria|facebook|themeruby|#", link)]
   link <- link[sapply(link, function(x) any(!(x %in% words)))]
   
@@ -30,19 +44,14 @@ for (i in 1:32){
 }
 links
 
-
-no <- c("http://kimondottigazsagok.com/", "http://kimondottigazsagok.com/?s=koronav%C3%ADrus")
-links <- links[!duplicated(links)]
-links <- links[!(links %in% no)] 
+links <- unique(links)
 
 
-#################################
-# Read links and download HTMLs #
-#################################
-
+# download links HTML-s
+# TODO: set key number!
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i],file= paste(i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -62,18 +71,17 @@ title_ext <- function(elem){
 
 # date extractor:
 date_ext <- function(elem){
-  json <- xml_text(b %>% html_nodes("script"))
+  json <- xml_text(elem %>% html_nodes("script"))
   json <- paste(json, collapse = '')
   json <- gsub('^.*"datePublished\\s*|\\s*T.*$', '', json)
   date <- gsub("\":\"","", json)
   
   return(date)
 }
-date_ext(b)
 
 # article extractor:
 text_ext <- function(elem){
-  text <- xml_text(b %>% html_nodes(xpath="//div[@class='inner-post-entry']//p"))
+  text <- xml_text(elem %>% html_nodes(xpath="//div[@class='inner-post-entry']//p"))
   text <- paste(text, collapse = '')
   
   return(text)
@@ -134,7 +142,7 @@ df_append <- function(folder){
   
   write.table(df, 'C:/Users/molna/Desktop/Szakdolgozat/KimondottIgazságok/kimondottigazsagok_articles.csv', sep = '%%', fileEncoding = "utf-8")
   
-  return(df)
+  #return(df)
 }
 
 
