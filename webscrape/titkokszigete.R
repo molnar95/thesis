@@ -12,19 +12,26 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/TitkokSzigete/htmls")
 # Read pages and collect article URLs   #
 #########################################
 
-key1 <- "koronavírus" #51
-key2 <- "covid"       #17
-key3 <- "karantén"    #8
-key4 <- "vuhan"       #3
-key5 <- "vírus"       #59
-key6 <- "járvány"     #51
-key7 <- "vakcina"     #12
+# set keywords and search urls
+key1 <- "koronavírus" # 114
+key2 <- "covid"       # 39
+key3 <- "karantén"    # 13
+key4 <- "vuhan"       # 8
+key5 <- "vírus"       # 134
+key6 <- "járvány"     # 111
+key7 <- "vakcina"     # 49
+
+key <- key7
+iter <- 49
 
 
+# iterating on search urls and save 
+# article links
+# TODO: set link number!!
 links <- c()
 pb <- txtProgressBar(min=0, max=12, style=3)
-for (i in 1:12){
-  link <- paste0("http://titkokszigete.hu/page/", i, "/?s=", key7)
+for (i in 1:iter){
+  link <- paste0("http://titkokszigete.hu/page/", i, "/?s=", key)
   pages <- read_html(link)
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
   
@@ -42,10 +49,11 @@ links <- unique(links)
 links
 
 
-
+# download links HTML-s
+# TODO: set key number!
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i], file= paste(key7, "_", i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -117,7 +125,7 @@ html_to_df <- function(folder){
   
   i = 1
   while(i <= length(linkfile)){
-    datas <- df_creator(read_html(linkfile[i]))
+    datas <- df_creator(read_html(linkfile[i], encoding = "utf-8"))
     saveRDS(datas, 
             paste0('C:/Users/molna/Desktop/Szakdolgozat/TitkokSzigete/data', 
                    '/', 'dataframe', '_', i, '.RData'))
