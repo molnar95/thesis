@@ -40,6 +40,7 @@ link_ext <- function(elem){
 text_ext <- function(elem){
   text <- xml_text(elem %>% html_nodes("p"))
   text <- paste(text, collapse = ' ')
+  text <- gsub("NÉZZ SZÉT A KATEGORIZÁL TÉMAKÖREINK CIKKEI KÖZÖTT: .*", "", text)
   
   return(text)
 }
