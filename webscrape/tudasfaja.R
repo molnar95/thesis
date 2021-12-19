@@ -12,19 +12,25 @@ setwd("C:/Users/molna/Desktop/Szakdolgozat/TudásFája/htmls")
 # Read pages and collect article URLs   #
 #########################################
 
-key1 <- "koronavírus" #72
-key2 <- "covid"       #34
-key3 <- "karantén"    #27
-key4 <- "vuhan"       #2
-key5 <- "vírus"       #88
-key6 <- "járvány"     #57
-key7 <- "vakcina"     #11  
+key1 <- "koronavírus" # 129
+key2 <- "covid"       # 61
+key3 <- "karantén"    # 48
+key4 <- "vuhan"       # 2
+key5 <- "vírus"       # 150
+key6 <- "járvány"     # 110
+key7 <- "vakcina"     # 56
+
+key <- key7
+iter <- 56
 
 
+# iterating on search urls and save 
+# article links
+# TODO: set link number!!
 links <- c()
 pb <- txtProgressBar(min=0, max=11, style=3)
-for (i in 1:11){
-  link <- paste0("https://www.tudasfaja.com/page/", i, "/?s=", key7)
+for (i in 1:iter){
+  link <- paste0("https://www.tudasfaja.com/page/", i, "/?s=", key)
   pages <- read_html(link)
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
   
@@ -41,9 +47,11 @@ links
 
 links <- unique(links)
 
+
+# download links HTML-s
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i], file= paste(key7, "_", i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
