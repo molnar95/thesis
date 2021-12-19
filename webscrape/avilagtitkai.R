@@ -32,15 +32,20 @@ link5 <- paste0("https://avilagtitkai.com/articles/search?string=", key5, "&page
 key6 <- "járvány"
 link6 <- paste0("https://avilagtitkai.com/articles/search?string=", key6, "&page=")
 
+key7 <- "vakcina"
+link7 <- paste0("https://avilagtitkai.com/articles/search?string=", key7, "&page=")
+
+link <- link7
+key <- key7
 
 # iterating on search urls and save 
 # article links
 # TODO: set link number!!
 links <- c()
-pb <- txtProgressBar(min=0, max=2, style=3)
-for (i in 1:2){
+pb <- txtProgressBar(min=0, max=5, style=3)
+for (i in 1:10){
   
-  link <- paste0(link6, 1)
+  link <- paste0(link, i)
   pages <- read_html(link)
   link <- xml_text(as.vector(pages %>% html_nodes(xpath = "//div/a//@href")))
   
@@ -59,7 +64,7 @@ links
 # TODO: set key number!
 pb <- txtProgressBar(min=0, max=length(links), style=3)
 for (i in 1:length(links)){
-  download_html(links[i], file= paste(key6, "_", i, ".html", sep = ""), mode="wb")
+  download_html(links[i], file= paste(key, "_", i, ".html", sep = ""), mode="wb")
   
   setTxtProgressBar(pb, i)
 }
@@ -69,7 +74,6 @@ for (i in 1:length(links)){
 # Extract HTML elements #
 #########################
 
-#b <- read_html("covid_11.html")
 
 # title extractor:
 title_ext <- function(elem){
@@ -164,5 +168,3 @@ df_append <- function(folder){
 html_to_df('htmls')
 df_append('data')
 
-
-df <- read.csv('C:/Users/molna/Desktop/Szakdolgozat/AvilágTitkai/avilagtitkai_articles.csv')
